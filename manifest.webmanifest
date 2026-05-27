@@ -1,0 +1,18 @@
+{
+  "name": "AmandaFlix Aprovador",
+  "short_name": "Aprovador",
+  "description": "Painel PWA para aprovar ou rejeitar reproducoes do AmandaFlix.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#090d14",
+  "theme_color": "#0f172a",
+  "icons": [
+    {
+      "src": "./icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
