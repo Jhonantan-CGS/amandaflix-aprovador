@@ -22,6 +22,7 @@ const loginForm = document.getElementById("loginForm");
 const passwordInput = document.getElementById("passwordInput");
 const loginError = document.getElementById("loginError");
 const appShell = document.getElementById("appShell");
+const pendingCountEl = document.getElementById("pendingCount");
 
 let deferredInstallPrompt = null;
 
@@ -92,7 +93,34 @@ function formatTime(value) {
   });
 }
 
+function posterFor(item) {
+  return item.poster || item.cover || item.image || item.thumbnail || "";
+}
+
+function detailChips(item) {
+  return [
+    item.type,
+    item.category,
+    item.rating ? `Classificacao ${item.rating}` : "",
+    item.year,
+    item.duration,
+    item.season && item.episode ? `T${item.season} E${item.episode}` : "",
+    item.approvalScope === "movie" ? "Liberacao permanente" : "",
+    item.approvalScope === "episode" ? "Liberacao por episodio" : ""
+  ].filter(Boolean);
+}
+
+function renderPoster(item) {
+  const poster = posterFor(item);
+  if (!poster) {
+    return '<div class="poster poster-fallback">AF</div>';
+  }
+  return `<img class="poster" src="${escapeText(poster)}" alt="Capa de ${escapeText(item.title || "conteudo")}">`;
+}
+
 function renderPending(items) {
+  pendingCountEl.textContent = String(items.length);
+
   if (!items.length) {
     pendingEl.innerHTML = '<div class="empty">Nenhuma solicitacao aguardando aprovacao.</div>';
     return;
@@ -100,10 +128,14 @@ function renderPending(items) {
 
   pendingEl.innerHTML = items.map(item => `
     <article class="request">
+      ${renderPoster(item)}
       <div>
         <div class="title">${escapeText(item.title || "Conteudo AmandaFlix")}</div>
-        <div class="meta">${escapeText(item.type || "Conteudo")} - ${escapeText(item.category || "Sem categoria")} - ${formatTime(item.createdAt)}</div>
-        <div class="meta">Classificacao: ${escapeText(item.rating || "nao informada")}</div>
+        <div class="meta">Solicitado as ${formatTime(item.createdAt)}</div>
+        ${item.description ? `<div class="description">${escapeText(item.description)}</div>` : ""}
+        <div class="chips">
+          ${detailChips(item).map(chip => `<span class="chip">${escapeText(chip)}</span>`).join("")}
+        </div>
       </div>
       <div class="actions">
         <button class="approve" data-id="${escapeText(item.id)}" data-decision="approved">Aprovar</button>
@@ -119,6 +151,7 @@ function renderHistory(items) {
     const label = status === "approved" ? "Aprovado" : status === "rejected" ? "Rejeitado" : "Pendente";
     return `
       <li>
+        ${posterFor(item) ? `<img src="${escapeText(posterFor(item))}" alt="">` : "<span></span>"}
         <span>${escapeText(item.title || "Conteudo AmandaFlix")}</span>
         <span class="pill ${escapeText(status)}">${label}</span>
       </li>

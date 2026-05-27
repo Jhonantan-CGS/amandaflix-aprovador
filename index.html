@@ -11,13 +11,14 @@
   <style>
     :root {
       color-scheme: dark;
-      --bg: #090d14;
-      --panel: #111827;
-      --panel-soft: #172033;
+      --bg: #070a11;
+      --panel: #101722;
+      --panel-soft: #151f2f;
       --text: #f8fafc;
-      --muted: #9ca3af;
-      --line: #253044;
+      --muted: #a7b0bf;
+      --line: #263247;
       --accent: #e50914;
+      --accent-soft: rgba(229, 9, 20, .16);
       --ok: #22c55e;
       --bad: #ef4444;
       --warn: #f59e0b;
@@ -32,7 +33,10 @@
     body {
       margin: 0;
       min-height: 100vh;
-      background: var(--bg);
+      background:
+        radial-gradient(circle at 18% 8%, rgba(229, 9, 20, .16), transparent 32%),
+        radial-gradient(circle at 84% 12%, rgba(34, 197, 94, .08), transparent 34%),
+        linear-gradient(180deg, #090d15 0%, var(--bg) 42%, #05070c 100%);
       color: var(--text);
       font-family: Arial, Helvetica, sans-serif;
     }
@@ -119,9 +123,9 @@
     }
 
     main {
-      width: min(980px, 100%);
+      width: min(1180px, 100%);
       margin: 0 auto;
-      padding: 18px 14px 36px;
+      padding: 20px 16px 40px;
     }
 
     header {
@@ -129,7 +133,7 @@
       align-items: center;
       justify-content: space-between;
       gap: 12px;
-      padding: 8px 2px 18px;
+      padding: 8px 2px 20px;
     }
 
     .brand {
@@ -140,10 +144,11 @@
     }
 
     .brand img {
-      width: 46px;
-      height: 46px;
-      border-radius: 10px;
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
       object-fit: cover;
+      border: 1px solid rgba(255, 255, 255, .14);
     }
 
     h1 {
@@ -169,37 +174,62 @@
       display: none;
     }
 
-    .mascot {
+    .dashboard-hero {
       display: grid;
-      grid-template-columns: 82px 1fr;
-      gap: 14px;
+      grid-template-columns: 120px 1fr auto;
+      gap: 18px;
       align-items: center;
-      margin-bottom: 14px;
-      padding: 12px;
+      margin-bottom: 16px;
+      padding: 16px;
       border: 1px solid var(--line);
       border-radius: 8px;
-      background: linear-gradient(135deg, rgba(229, 9, 20, .14), rgba(23, 32, 51, .82));
+      background:
+        linear-gradient(135deg, rgba(229, 9, 20, .18), rgba(21, 31, 47, .84)),
+        var(--panel);
+      box-shadow: 0 18px 48px rgba(0, 0, 0, .26);
     }
 
-    .mascot img {
-      width: 82px;
-      height: 82px;
-      border-radius: 14px;
+    .dashboard-hero img {
+      width: 120px;
+      height: 120px;
+      border-radius: 24px;
       object-fit: cover;
-      box-shadow: 0 16px 40px rgba(0, 0, 0, .34);
-      animation: mascotFloat 2.8s ease-in-out infinite;
+      border: 2px solid rgba(255, 255, 255, .14);
+      box-shadow: 0 22px 54px rgba(0, 0, 0, .34);
+      animation: portraitFloat 3s ease-in-out infinite;
     }
 
-    .mascot strong {
+    .dashboard-hero strong {
       display: block;
-      font-size: 16px;
-      margin-bottom: 4px;
+      font-size: clamp(22px, 4vw, 34px);
+      line-height: 1.05;
+      margin-bottom: 8px;
     }
 
-    .mascot span {
+    .dashboard-hero span {
       color: var(--muted);
-      font-size: 14px;
-      line-height: 1.35;
+      font-size: 15px;
+      line-height: 1.45;
+    }
+
+    .hero-stat {
+      min-width: 132px;
+      padding: 14px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, .12);
+      background: rgba(7, 10, 17, .46);
+      text-align: center;
+    }
+
+    .hero-stat b {
+      display: block;
+      font-size: 34px;
+      line-height: 1;
+    }
+
+    .hero-stat small {
+      color: var(--muted);
+      font-weight: 700;
     }
 
     section {
@@ -222,13 +252,30 @@
 
     .request {
       display: grid;
-      grid-template-columns: 1fr auto;
+      grid-template-columns: 92px 1fr auto;
       gap: 12px;
       align-items: center;
       padding: 12px;
       background: var(--panel-soft);
       border: 1px solid var(--line);
       border-radius: 8px;
+    }
+
+    .poster {
+      width: 92px;
+      aspect-ratio: 2 / 3;
+      border-radius: 8px;
+      object-fit: cover;
+      background: #0b1220;
+      border: 1px solid rgba(255, 255, 255, .1);
+    }
+
+    .poster-fallback {
+      display: grid;
+      place-items: center;
+      color: #fca5a5;
+      font-weight: 900;
+      font-size: 28px;
     }
 
     .title {
@@ -241,6 +288,33 @@
       margin-top: 4px;
       color: var(--muted);
       font-size: 13px;
+    }
+
+    .description {
+      margin-top: 8px;
+      color: #d5deeb;
+      font-size: 14px;
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 3;
+      overflow: hidden;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .chip {
+      padding: 5px 8px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .07);
+      color: #d8e2f0;
+      font-size: 12px;
+      font-weight: 800;
     }
 
     .actions {
@@ -279,13 +353,22 @@
 
     .history li {
       display: grid;
-      grid-template-columns: 1fr auto;
+      grid-template-columns: 42px 1fr auto;
+      align-items: center;
       gap: 10px;
       padding: 10px;
       background: var(--panel-soft);
       border-radius: 8px;
       color: var(--muted);
       font-size: 14px;
+    }
+
+    .history img {
+      width: 42px;
+      height: 56px;
+      border-radius: 6px;
+      object-fit: cover;
+      background: #0b1220;
     }
 
     .pill {
@@ -297,7 +380,7 @@
     .rejected { color: #fca5a5; }
     .pending { color: #fde68a; }
 
-    @keyframes mascotFloat {
+    @keyframes portraitFloat {
       0%, 100% { transform: translateY(0) scale(1); }
       50% { transform: translateY(-4px) scale(1.025); }
     }
@@ -305,6 +388,12 @@
     @media (max-width: 700px) {
       .request {
         grid-template-columns: 1fr;
+      }
+
+      .poster {
+        width: 100%;
+        max-height: 260px;
+        aspect-ratio: 16 / 9;
       }
 
       .actions {
@@ -316,13 +405,18 @@
         align-items: flex-start;
       }
 
-      .mascot {
-        grid-template-columns: 64px 1fr;
+      .dashboard-hero {
+        grid-template-columns: 74px 1fr;
       }
 
-      .mascot img {
-        width: 64px;
-        height: 64px;
+      .dashboard-hero img {
+        width: 74px;
+        height: 74px;
+        border-radius: 18px;
+      }
+
+      .hero-stat {
+        grid-column: 1 / -1;
       }
     }
   </style>
@@ -356,11 +450,15 @@
       <button class="install" id="installButton">Instalar</button>
     </header>
 
-    <div class="mascot">
-      <img src="./amanda-loading.jpg" alt="AmandaFlix aguardando aprovacao">
+    <div class="dashboard-hero">
+      <img src="./dayane-profile.jpg" alt="Perfil Dayane">
       <div>
-        <strong>A Amanda foi tirar o leite da vaca.</strong>
-        <span>Quando uma solicitacao chegar, aprove ou rejeite para controlar a sessao.</span>
+        <strong>Central de aprovacao da Dayane</strong>
+        <span>Receba os detalhes do filme ou episodio, veja capa, classificacao e descricao, e libere apenas o que fizer sentido para a Amanda assistir.</span>
+      </div>
+      <div class="hero-stat">
+        <b id="pendingCount">0</b>
+        <small>pendentes</small>
       </div>
     </div>
 
