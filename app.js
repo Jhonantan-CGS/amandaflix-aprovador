@@ -148,12 +148,15 @@ function renderPending(items) {
 function renderHistory(items) {
   historyEl.innerHTML = items.map(item => {
     const status = item.status || "pending";
-    const label = status === "approved" ? "Aprovado" : status === "rejected" ? "Rejeitado" : "Pendente";
+    const label = status === "approved" ? "Aprovado" : status === "rejected" ? "Rejeitado" : status === "blocked" ? "Bloqueado" : status === "expired" ? "Expirado" : "Pendente";
+    const blockButton = status === "approved"
+      ? `<button class="block" data-id="${escapeText(item.id)}" data-decision="blocked">Bloquear</button>`
+      : `<span class="pill ${escapeText(status)}">${label}</span>`;
     return `
       <li>
         ${posterFor(item) ? `<img src="${escapeText(posterFor(item))}" alt="">` : "<span></span>"}
         <span>${escapeText(item.title || "Conteudo AmandaFlix")}</span>
-        <span class="pill ${escapeText(status)}">${label}</span>
+        ${blockButton}
       </li>
     `;
   }).join("") || '<li><span>Nenhuma decisao registrada.</span><span></span></li>';
@@ -201,15 +204,22 @@ async function startFirebase() {
   const db = getFirestore(app);
   const requests = collection(db, approvalCollectionName);
 
-  pendingEl.addEventListener("click", async event => {
+  async function handleDecisionClick(event) {
     const button = event.target.closest("button[data-id]");
     if (!button) {
       return;
     }
 
     button.disabled = true;
-    await decide(db, button.dataset.id, button.dataset.decision);
-  });
+    try {
+      await decide(db, button.dataset.id, button.dataset.decision);
+    } finally {
+      button.disabled = false;
+    }
+  }
+
+  pendingEl.addEventListener("click", handleDecisionClick);
+  historyEl.addEventListener("click", handleDecisionClick);
 
   onSnapshot(
     query(requests, where("status", "==", "pending"), orderBy("createdAt", "desc"), limit(30)),

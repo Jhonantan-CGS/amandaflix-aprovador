@@ -1,4 +1,4 @@
-const CACHE_NAME = "amandaflix-approval-v4";
+const CACHE_NAME = "amandaflix-approval-v5";
 const ASSETS = [
   "./",
   "./index.html",
