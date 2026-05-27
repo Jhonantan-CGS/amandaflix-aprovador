@@ -25,9 +25,17 @@ const appShell = document.getElementById("appShell");
 const pendingCountEl = document.getElementById("pendingCount");
 
 let deferredInstallPrompt = null;
+let logoutTimer = null;
+let audioContext = null;
 
 const APPROVAL_PASSWORD = "1A2b3c4d";
 const SESSION_KEY = "amandaflix-approval-dayane-session";
+const SESSION_TIMEOUT_MS = 25 * 60 * 1000;
+const ICONS = {
+  approved: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>',
+  rejected: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>',
+  blocked: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>'
+};
 
 function isConfigured() {
   return firebaseConfig.projectId && !firebaseConfig.projectId.startsWith("COLE_AQUI");
@@ -37,9 +45,48 @@ function isUnlocked() {
   return localStorage.getItem(SESSION_KEY) === "unlocked";
 }
 
+function lockSession() {
+  localStorage.removeItem(SESSION_KEY);
+  appShell.hidden = true;
+  loginScreen.hidden = false;
+  passwordInput.value = "";
+  loginError.textContent = "Sessao expirada por inatividade. Digite a senha novamente.";
+  passwordInput.focus();
+}
+
+function renewSessionTimer() {
+  if (!isUnlocked()) {
+    return;
+  }
+  clearTimeout(logoutTimer);
+  logoutTimer = setTimeout(lockSession, SESSION_TIMEOUT_MS);
+}
+
 function showApp() {
   loginScreen.hidden = true;
   appShell.hidden = false;
+  renewSessionTimer();
+}
+
+function setupSessionActivity() {
+  ["click", "keydown", "touchstart", "mousemove"].forEach(eventName => {
+    document.addEventListener(eventName, renewSessionTimer, { passive: true });
+  });
+}
+
+function playFeedback(decision) {
+  audioContext ||= new (window.AudioContext || window.webkitAudioContext)();
+  const oscillator = audioContext.createOscillator();
+  const gain = audioContext.createGain();
+  const frequency = decision === "approved" ? 740 : decision === "blocked" ? 392 : 220;
+  oscillator.type = "sine";
+  oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+  gain.gain.setValueAtTime(0.001, audioContext.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.16, audioContext.currentTime + 0.018);
+  gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.16);
+  oscillator.connect(gain).connect(audioContext.destination);
+  oscillator.start();
+  oscillator.stop(audioContext.currentTime + 0.18);
 }
 
 function setupLogin() {
@@ -138,8 +185,8 @@ function renderPending(items) {
         </div>
       </div>
       <div class="actions">
-        <button class="approve" data-id="${escapeText(item.id)}" data-decision="approved">Aprovar</button>
-        <button class="reject" data-id="${escapeText(item.id)}" data-decision="rejected">Rejeitar</button>
+        <button class="approve" data-id="${escapeText(item.id)}" data-decision="approved">${ICONS.approved}Aprovar</button>
+        <button class="reject" data-id="${escapeText(item.id)}" data-decision="rejected">${ICONS.rejected}Rejeitar</button>
       </div>
     </article>
   `).join("");
@@ -150,7 +197,7 @@ function renderHistory(items) {
     const status = item.status || "pending";
     const label = status === "approved" ? "Aprovado" : status === "rejected" ? "Rejeitado" : status === "blocked" ? "Bloqueado" : status === "expired" ? "Expirado" : "Pendente";
     const blockButton = status === "approved"
-      ? `<button class="block" data-id="${escapeText(item.id)}" data-decision="blocked">Bloquear</button>`
+      ? `<button class="block" data-id="${escapeText(item.id)}" data-decision="blocked">${ICONS.blocked}Bloquear</button>`
       : `<span class="pill ${escapeText(status)}">${label}</span>`;
     return `
       <li>
@@ -211,10 +258,14 @@ async function startFirebase() {
     }
 
     button.disabled = true;
+    const card = button.closest(".request") || button.closest("li");
+    card?.classList.add("deciding");
     try {
       await decide(db, button.dataset.id, button.dataset.decision);
+      playFeedback(button.dataset.decision);
     } finally {
       button.disabled = false;
+      card?.classList.remove("deciding");
     }
   }
 
@@ -244,6 +295,7 @@ async function startFirebase() {
 
 async function boot() {
   await setupPwaInstall();
+  setupSessionActivity();
 
   if (setupLogin()) {
     await startFirebase();
