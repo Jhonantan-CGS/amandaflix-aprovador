@@ -34,7 +34,8 @@ const SESSION_TIMEOUT_MS = 25 * 60 * 1000;
 const ICONS = {
   approved: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>',
   rejected: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>',
-  blocked: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>'
+  blocked: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>',
+  cancelled: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 10l4 4m0-4-4 4"/><circle cx="12" cy="12" r="9"/></svg>'
 };
 
 function isConfigured() {
@@ -195,7 +196,7 @@ function renderPending(items) {
 function renderHistory(items) {
   historyEl.innerHTML = items.map(item => {
     const status = item.status || "pending";
-    const label = status === "approved" ? "Aprovado" : status === "rejected" ? "Rejeitado" : status === "blocked" ? "Bloqueado" : status === "expired" ? "Expirado" : "Pendente";
+    const label = status === "approved" ? "Aprovado" : status === "rejected" ? "Rejeitado" : status === "blocked" ? "Bloqueado" : status === "expired" ? "Expirado" : status === "cancelled" ? "Cancelada" : "Pendente";
     const blockButton = status === "approved"
       ? `<button class="block" data-id="${escapeText(item.id)}" data-decision="blocked">${ICONS.blocked}Bloquear</button>`
       : `<span class="pill ${escapeText(status)}">${label}</span>`;
