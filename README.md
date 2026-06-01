@@ -1,29 +1,14 @@
 # AmandaFlix Aprovador PWA
 
-Este web app e o painel dos pais para aprovar ou rejeitar reproducoes.
+Painel familiar publicado no GitHub Pages. O PWA nao acessa o provedor e nao grava diretamente no Firestore.
 
-## Publicacao no GitHub Pages
+## Seguranca
 
-1. Crie um projeto Firebase com Firestore.
-2. Copie as credenciais Web para `firebase-config.js`.
-3. Publique a pasta `approval-pwa` no GitHub Pages.
-4. Use a mesma `projectId`, `apiKey` e colecao no worker/proxy `workerContent.js`.
+- A senha e validada pelo AmandaFlix Proxy Worker.
+- O navegador armazena somente uma sessao temporaria em `sessionStorage`.
+- Decisoes e historico ficam no Cloudflare D1.
+- O worker e a unica camada autorizada a acessar o provedor e transmitir midia.
 
-## Colecao Firestore
+## Configuracao
 
-Colecao padrao: `amandaflixApprovalRequests`.
-
-Campos principais:
-- `id`
-- `status`: `pending`, `approved`, `rejected`
-- `title`
-- `type`
-- `category`
-- `rating`
-- `createdAt`
-- `updatedAt`
-- `decidedAt`
-
-## Observacao
-
-GitHub Pages hospeda o PWA, mas a fila em tempo real fica no Firebase Firestore.
+Defina o endpoint publicado em `api-config.js` e publique esta pasta no GitHub Pages.

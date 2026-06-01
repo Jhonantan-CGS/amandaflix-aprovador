@@ -1,9 +1,9 @@
-const CACHE_NAME = "amandaflix-approval-v7";
+const CACHE_NAME = "amandaflix-approval-v8";
 const ASSETS = [
   "./",
   "./index.html",
   "./app.js",
-  "./firebase-config.js",
+  "./api-config.js",
   "./manifest.webmanifest",
   "./icon.png",
   "./dayane-profile.jpg",
