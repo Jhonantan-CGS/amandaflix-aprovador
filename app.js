@@ -10,9 +10,6 @@ const passwordInput = document.getElementById("passwordInput");
 const loginError = document.getElementById("loginError");
 const appShell = document.getElementById("appShell");
 const pendingCountEl = document.getElementById("pendingCount");
-const metadataForm = document.getElementById("metadataForm");
-const metadataDeleteButton = document.getElementById("metadataDelete");
-const metadataCloseButton = document.getElementById("metadataClose");
 
 const SESSION_KEY = "amandaflix-approver-token";
 const REFRESH_MS = 2500;
@@ -125,21 +122,6 @@ function render(items) {
   statusEl.textContent = `Online - ${pending.length} pendente(s)`;
 }
 
-function renderMetadataReviews(items) {
-  metadataCountEl.textContent = String(items.length);
-  metadataReviewEl.innerHTML = items.map(item => `
-    <article class="metadata-card">
-      ${item.poster ? `<img class="poster" src="${escapeText(item.poster)}" alt="">` : '<div class="poster poster-fallback">AF</div>'}
-      <div>
-        <div class="title">${escapeText(item.title || "Conteudo sem titulo")}</div>
-        <div class="meta">${escapeText(item.media_key)} · origem ${escapeText(item.source)}</div>
-        <div class="description">Metadado incompleto ou ambiguo. Revise o titulo e a URL da capa antes da proxima solicitacao.</div>
-      </div>
-      <button class="edit-metadata" data-key="${escapeText(item.media_key)}" data-type="${escapeText(item.media_type)}" data-id="${escapeText(item.media_id)}" data-title="${escapeText(item.title)}" data-poster="${escapeText(item.poster)}">Editar</button>
-    </article>
-  `).join("") || '<div class="empty">Nenhum metadado aguardando revisao.</div>';
-}
-
 async function refresh() {
   clearTimeout(refreshTimer);
   try {
@@ -168,41 +150,6 @@ async function decide(event) {
     button.disabled = false;
   }
 }
-
-function openMetadataEditor(event) {
-  const button = event.target.closest("button[data-key]");
-  if (!button) return;
-  playTone("tap");
-  metadataKeyInput.value = button.dataset.key;
-  metadataTypeInput.value = button.dataset.type;
-  metadataIdInput.value = button.dataset.id;
-  metadataTitleInput.value = button.dataset.title;
-  metadataPosterInput.value = button.dataset.poster;
-  metadataDialog.showModal();
-}
-
-metadataForm?.addEventListener("submit", async event => {
-  event.preventDefault();
-  await api(`/metadata/${encodeURIComponent(metadataTypeInput.value)}/${encodeURIComponent(metadataIdInput.value)}`, {
-    method: "POST",
-    body: JSON.stringify({ title: metadataTitleInput.value, poster: metadataPosterInput.value })
-  });
-  playTone("save");
-  metadataDialog.close();
-  await refresh();
-});
-
-metadataDeleteButton?.addEventListener("click", async () => {
-  await api(`/metadata/${encodeURIComponent(metadataTypeInput.value)}/${encodeURIComponent(metadataIdInput.value)}/delete`, { method: "POST" });
-  playTone("reject");
-  metadataDialog.close();
-  await refresh();
-});
-
-metadataCloseButton?.addEventListener("click", () => {
-  playTone("tap");
-  metadataDialog.close();
-});
 
 async function setupInstall() {
   if ("serviceWorker" in navigator) await navigator.serviceWorker.register("./sw.js");
