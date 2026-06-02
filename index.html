@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#0f172a">
+  <meta name="theme-color" content="#5c163d">
   <title>AmandaFlix Aprovador</title>
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon.png">
@@ -11,14 +11,14 @@
   <style>
     :root {
       color-scheme: dark;
-      --bg: #070a11;
-      --panel: #101722;
-      --panel-soft: #151f2f;
+      --bg: #210717;
+      --panel: #48102f;
+      --panel-soft: #5c163d;
       --text: #f8fafc;
       --muted: #a7b0bf;
-      --line: #263247;
-      --accent: #e50914;
-      --accent-soft: rgba(229, 9, 20, .16);
+      --line: rgba(255, 145, 193, .28);
+      --accent: #ff4f9a;
+      --accent-soft: rgba(255, 79, 154, .18);
       --ok: #22c55e;
       --bad: #ef4444;
       --warn: #f59e0b;
@@ -34,9 +34,9 @@
       margin: 0;
       min-height: 100vh;
       background:
-        radial-gradient(circle at 18% 8%, rgba(229, 9, 20, .16), transparent 32%),
-        radial-gradient(circle at 84% 12%, rgba(34, 197, 94, .08), transparent 34%),
-        linear-gradient(180deg, #090d15 0%, var(--bg) 42%, #05070c 100%);
+        radial-gradient(circle at 18% 8%, rgba(255, 79, 154, .30), transparent 34%),
+        radial-gradient(circle at 84% 12%, rgba(190, 42, 121, .20), transparent 36%),
+        linear-gradient(180deg, #681944 0%, var(--bg) 48%, #180411 100%);
       color: var(--text);
       font-family: Arial, Helvetica, sans-serif;
     }
@@ -110,8 +110,8 @@
     }
 
     .login-form input:focus {
-      border-color: rgba(229, 9, 20, .72);
-      box-shadow: 0 0 0 3px rgba(229, 9, 20, .16);
+      border-color: rgba(255, 79, 154, .72);
+      box-shadow: 0 0 0 3px rgba(255, 79, 154, .16);
     }
 
     .login-error {
@@ -186,7 +186,7 @@
       border: 1px solid var(--line);
       border-radius: 8px;
       background:
-        linear-gradient(135deg, rgba(229, 9, 20, .18), rgba(21, 31, 47, .84)),
+        linear-gradient(135deg, rgba(255, 79, 154, .25), rgba(92, 22, 61, .78)),
         var(--panel);
       backdrop-filter: blur(18px);
       -webkit-backdrop-filter: blur(18px);
@@ -237,7 +237,7 @@
     }
 
     section {
-      background: rgba(16, 23, 34, .72);
+      background: rgba(72, 16, 47, .68);
       border: 1px solid var(--line);
       border-radius: 8px;
       padding: 14px;
@@ -263,7 +263,7 @@
       gap: 12px;
       align-items: center;
       padding: 12px;
-      background: rgba(21, 31, 47, .72);
+      background: rgba(92, 22, 61, .64);
       border: 1px solid var(--line);
       border-radius: 8px;
       box-shadow: 0 14px 34px rgba(0, 0, 0, .18);
@@ -272,8 +272,8 @@
 
     .request:hover {
       transform: translateY(-2px);
-      border-color: rgba(229, 9, 20, .42);
-      background: rgba(25, 38, 58, .86);
+      border-color: rgba(255, 79, 154, .52);
+      background: rgba(122, 31, 82, .84);
     }
 
     .request.deciding {
@@ -437,6 +437,49 @@
     .cancelled { color: #93c5fd; }
     .pending { color: #fde68a; }
 
+    .metadata-card {
+      display: grid;
+      grid-template-columns: 92px 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(92, 22, 61, .58);
+    }
+
+    .edit-metadata { background: #b52a72; }
+
+    dialog {
+      width: min(560px, calc(100% - 24px));
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: rgba(72, 16, 47, .96);
+      color: var(--text);
+      box-shadow: 0 28px 90px rgba(0, 0, 0, .48);
+    }
+
+    dialog::backdrop {
+      background: rgba(24, 4, 17, .72);
+      backdrop-filter: blur(6px);
+    }
+
+    .metadata-form { display: grid; gap: 10px; }
+    .metadata-form label { color: var(--muted); font-size: 13px; font-weight: 800; }
+    .metadata-form input {
+      min-height: 44px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(33, 7, 23, .82);
+      color: var(--text);
+      padding: 0 12px;
+    }
+    .dialog-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+    .save-metadata { background: var(--accent); }
+    .delete-metadata { background: #7f1d4e; }
+    .close-metadata { background: #632046; }
+    .tmdb-note { color: var(--muted); font-size: 12px; text-align: center; padding: 10px; }
+
     @keyframes portraitFloat {
       0%, 100% { transform: translateY(0) scale(1); }
       50% { transform: translateY(-4px) scale(1.025); }
@@ -446,6 +489,7 @@
       .request {
         grid-template-columns: 1fr;
       }
+      .metadata-card { grid-template-columns: 1fr; }
 
       .poster {
         width: 100%;
@@ -528,7 +572,32 @@
       <h2>Ultimas decisoes</h2>
       <ul class="history" id="history"></ul>
     </section>
+
+    <section>
+      <h2>Metadados para revisar <span class="pill pending" id="metadataCount">0</span></h2>
+      <div class="grid" id="metadataReview"></div>
+    </section>
+
+    <div class="tmdb-note">Este produto usa a API TMDB, mas nao e endossado ou certificado pelo TMDB.</div>
   </main>
+
+  <dialog id="metadataDialog">
+    <form class="metadata-form" id="metadataForm">
+      <h2>Editar metadados</h2>
+      <input id="metadataKey" type="hidden">
+      <input id="metadataType" type="hidden">
+      <input id="metadataId" type="hidden">
+      <label for="metadataTitle">Titulo exibido</label>
+      <input id="metadataTitle" type="text" autocomplete="off">
+      <label for="metadataPoster">URL da capa</label>
+      <input id="metadataPoster" type="url" autocomplete="off" placeholder="https://...">
+      <div class="dialog-actions">
+        <button class="save-metadata" type="submit">Salvar</button>
+        <button class="delete-metadata" id="metadataDelete" type="button">Restaurar automatico</button>
+        <button class="close-metadata" id="metadataClose" type="button">Fechar</button>
+      </div>
+    </form>
+  </dialog>
 
   <script type="module" src="./app.js"></script>
 </body>
