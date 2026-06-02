@@ -10,15 +10,7 @@ const passwordInput = document.getElementById("passwordInput");
 const loginError = document.getElementById("loginError");
 const appShell = document.getElementById("appShell");
 const pendingCountEl = document.getElementById("pendingCount");
-const metadataReviewEl = document.getElementById("metadataReview");
-const metadataCountEl = document.getElementById("metadataCount");
-const metadataDialog = document.getElementById("metadataDialog");
 const metadataForm = document.getElementById("metadataForm");
-const metadataKeyInput = document.getElementById("metadataKey");
-const metadataTypeInput = document.getElementById("metadataType");
-const metadataIdInput = document.getElementById("metadataId");
-const metadataTitleInput = document.getElementById("metadataTitle");
-const metadataPosterInput = document.getElementById("metadataPoster");
 const metadataDeleteButton = document.getElementById("metadataDelete");
 const metadataCloseButton = document.getElementById("metadataClose");
 
@@ -151,9 +143,8 @@ function renderMetadataReviews(items) {
 async function refresh() {
   clearTimeout(refreshTimer);
   try {
-    const [approvals, metadata] = await Promise.all([api("/approvals"), api("/metadata/reviews")]);
+    const approvals = await api("/approvals");
     render(approvals.items || []);
-    renderMetadataReviews(metadata.items || []);
   } catch (error) {
     statusEl.textContent = `Erro de conexao: ${error.message}`;
   }
@@ -190,7 +181,7 @@ function openMetadataEditor(event) {
   metadataDialog.showModal();
 }
 
-metadataForm.addEventListener("submit", async event => {
+metadataForm?.addEventListener("submit", async event => {
   event.preventDefault();
   await api(`/metadata/${encodeURIComponent(metadataTypeInput.value)}/${encodeURIComponent(metadataIdInput.value)}`, {
     method: "POST",
@@ -201,14 +192,14 @@ metadataForm.addEventListener("submit", async event => {
   await refresh();
 });
 
-metadataDeleteButton.addEventListener("click", async () => {
+metadataDeleteButton?.addEventListener("click", async () => {
   await api(`/metadata/${encodeURIComponent(metadataTypeInput.value)}/${encodeURIComponent(metadataIdInput.value)}/delete`, { method: "POST" });
   playTone("reject");
   metadataDialog.close();
   await refresh();
 });
 
-metadataCloseButton.addEventListener("click", () => {
+metadataCloseButton?.addEventListener("click", () => {
   playTone("tap");
   metadataDialog.close();
 });
@@ -247,8 +238,6 @@ loginForm.addEventListener("submit", async event => {
 
 pendingEl.addEventListener("click", decide);
 historyEl.addEventListener("click", decide);
-metadataReviewEl.addEventListener("click", openMetadataEditor);
-
 setupInstall().catch(error => statusEl.textContent = `Erro ao iniciar: ${error.message}`);
 if (token()) {
   loginScreen.hidden = true;

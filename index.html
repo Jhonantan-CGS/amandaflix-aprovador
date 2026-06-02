@@ -573,31 +573,8 @@
       <ul class="history" id="history"></ul>
     </section>
 
-    <section>
-      <h2>Metadados para revisar <span class="pill pending" id="metadataCount">0</span></h2>
-      <div class="grid" id="metadataReview"></div>
-    </section>
-
     <div class="tmdb-note">Este produto usa a API TMDB, mas nao e endossado ou certificado pelo TMDB.</div>
   </main>
-
-  <dialog id="metadataDialog">
-    <form class="metadata-form" id="metadataForm">
-      <h2>Editar metadados</h2>
-      <input id="metadataKey" type="hidden">
-      <input id="metadataType" type="hidden">
-      <input id="metadataId" type="hidden">
-      <label for="metadataTitle">Titulo exibido</label>
-      <input id="metadataTitle" type="text" autocomplete="off">
-      <label for="metadataPoster">URL da capa</label>
-      <input id="metadataPoster" type="url" autocomplete="off" placeholder="https://...">
-      <div class="dialog-actions">
-        <button class="save-metadata" type="submit">Salvar</button>
-        <button class="delete-metadata" id="metadataDelete" type="button">Restaurar automatico</button>
-        <button class="close-metadata" id="metadataClose" type="button">Fechar</button>
-      </div>
-    </form>
-  </dialog>
 
   <script type="module" src="./app.js"></script>
 </body>
